@@ -1,32 +1,31 @@
 ################################################################################
-#Michael Guerzhoy and Davi Frossard, 2016
-#AlexNet implementation in TensorFlow, with weights
+#Mike Chen,2020
+#AlexNet implementation in TensorFlow 2.0 with weights
+#
 #Details: 
+#Please download bvlc_alexnet.npy and test images inlcuding poodle.png, and laska.png, 
+#dog.png, dog2.png, quail227.JPEG -- test images (images should be 227x227x3)
 #http://www.cs.toronto.edu/~guerzhoy/tf_alexnet/
 #
 #With code from https://github.com/ethereon/caffe-tensorflow
 #Model from  https://github.com/BVLC/caffe/tree/master/models/bvlc_alexnet
 #Weights from Caffe converted using https://github.com/ethereon/caffe-tensorflow
 #
-#
 ################################################################################
 
-from numpy import *
-import os
-#from pylab import *
+from numpy import * 
+import os 
 import numpy as np
-#import matplotlib.pyplot as plt
-#import matplotlib.cbook as cbook
 import time
-from scipy.misc import imread
-from scipy.misc import imresize
+import imageio
+
 import matplotlib.image as mpimg
 from scipy.ndimage import filters
 import urllib
 from numpy import random
 
-
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.compat.v1.disable_eager_execution()
 
 from caffe_classes import class_names
 
@@ -36,16 +35,15 @@ xdim = train_x.shape[1:]
 ydim = train_y.shape[1]
 
 
-
 ################################################################################
 #Read Image, and change to BGR
 
 
-im1 = (imread("laska.png")[:,:,:3]).astype(float32)
+im1 = (imageio.imread("laska.png")[:,:,:3]).astype(float32)
 im1 = im1 - mean(im1)
 im1[:, :, 0], im1[:, :, 2] = im1[:, :, 2], im1[:, :, 0]
 
-im2 = (imread("poodle.png")[:,:,:3]).astype(float32)
+im2 = (imageio.imread("poodle.png")[:,:,:3]).astype(float32)
 im2[:, :, 0], im2[:, :, 2] = im2[:, :, 2], im2[:, :, 0]
 
 
@@ -66,8 +64,8 @@ im2[:, :, 0], im2[:, :, 2] = im2[:, :, 2], im2[:, :, 0]
 #         .fc(1000, relu=False, name='fc8')
 #         .softmax(name='prob'))
 
-#In Python 3.5, change this to:
-net_data = load(open("bvlc_alexnet.npy", "rb"), encoding="latin1").item()
+#In Python 3.7, change this to:
+net_data = np.load(open("bvlc_alexnet.npy", "rb"), encoding="latin1", allow_pickle=True).item()
 #net_data = load("bvlc_alexnet.npy").item()
 
 def conv(input, kernel, biases, k_h, k_w, c_o, s_h, s_w,  padding="VALID", group=1):
